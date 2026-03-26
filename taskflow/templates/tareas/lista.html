@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Tareas - TaskFlow{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Tareas</h2>
+    <a href="{{ url_for('tareas_nueva') }}" class="btn btn-primary">+ Nueva tarea</a>
+</div>
+
+<!-- FILTROS -->
+<div class="filters">
+    <a href="{{ url_for('tareas_lista') }}" class="btn btn-sm {% if not filtro_estado %}btn-primary{% else %}btn-outline{% endif %}">Todas</a>
+    <a href="{{ url_for('tareas_lista', estado='pendiente') }}" class="btn btn-sm {% if filtro_estado == 'pendiente' %}btn-primary{% else %}btn-outline{% endif %}">Pendientes</a>
+    <a href="{{ url_for('tareas_lista', estado='en_progreso') }}" class="btn btn-sm {% if filtro_estado == 'en_progreso' %}btn-primary{% else %}btn-outline{% endif %}">En progreso</a>
+    <a href="{{ url_for('tareas_lista', estado='completada') }}" class="btn btn-sm {% if filtro_estado == 'completada' %}btn-primary{% else %}btn-outline{% endif %}">Completadas</a>
+</div>
+
+{% if tareas %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Título</th>
+            <th>Estado</th>
+            <th>Asignado a</th>
+            <th>Proyecto</th>
+            <th>Fecha límite</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for tarea in tareas %}
+        <tr class="{% if tarea.estado == 'completada' %}row-completada{% endif %}">
+            <td>{{ tarea.id }}</td>
+            <td><a href="{{ url_for('tareas_detalle', id=tarea.id) }}">{{ tarea.titulo }}</a></td>
+            <td><span class="badge badge-{{ tarea.estado }}">{{ tarea.estado.replace('_', ' ') }}</span></td>
+            <td>{{ tarea.asignado_nombre or '—' }}</td>
+            <td>{{ tarea.proyecto_nombre or '—' }}</td>
+            <td>{{ tarea.fecha_limite or '—' }}</td>
+            <td class="actions-cell">
+                <form method="POST" action="{{ url_for('tareas_completar', id=tarea.id) }}" style="display:inline">
+                    <button type="submit" class="btn btn-xs {% if tarea.estado == 'completada' %}btn-warning{% else %}btn-success{% endif %}">
+                        {% if tarea.estado == 'completada' %}↩{% else %}✔{% endif %}
+                    </button>
+                </form>
+                <a href="{{ url_for('tareas_editar', id=tarea.id) }}" class="btn btn-xs btn-outline">✏️</a>
+                <form method="POST" action="{{ url_for('tareas_eliminar', id=tarea.id) }}" style="display:inline"
+                      onsubmit="return confirm('¿Eliminar esta tarea?')">
+                    <button type="submit" class="btn btn-xs btn-danger">🗑</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="empty-state">
+    <p>No hay tareas{% if filtro_estado %} con estado "{{ filtro_estado }}"{% endif %}.</p>
+    <a href="{{ url_for('tareas_nueva') }}" class="btn btn-primary">Crear tarea</a>
+</div>
+{% endif %}
+{% endblock %}

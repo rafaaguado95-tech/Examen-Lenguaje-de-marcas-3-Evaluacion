@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}{{ tarea.titulo }} - TaskFlow{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Detalle de tarea</h2>
+    <div>
+        <a href="{{ url_for('tareas_editar', id=tarea.id) }}" class="btn btn-outline">✏️ Editar</a>
+        <a href="{{ url_for('tareas_lista') }}" class="btn btn-outline">← Volver</a>
+    </div>
+</div>
+
+<div class="detail-card">
+    <div class="detail-header">
+        <h3>{{ tarea.titulo }}</h3>
+        <span class="badge badge-{{ tarea.estado }} badge-lg">{{ tarea.estado.replace('_', ' ') }}</span>
+    </div>
+
+    <div class="detail-meta">
+        <span>📁 Proyecto: <strong>{{ tarea.proyecto_nombre or 'Sin proyecto' }}</strong></span>
+        <span>👤 Asignado a: <strong>{{ tarea.asignado_nombre or 'Nadie' }}</strong></span>
+        <span>📅 Fecha límite: <strong>{{ tarea.fecha_limite or 'Sin fecha' }}</strong></span>
+        <span>🕐 Creada: <strong>{{ tarea.fecha_creacion[:10] }}</strong></span>
+    </div>
+
+    {% if tarea.descripcion %}
+    <div class="detail-body">
+        <h4>Descripción</h4>
+        <p>{{ tarea.descripcion }}</p>
+    </div>
+    {% endif %}
+
+    <div class="detail-actions">
+        <form method="POST" action="{{ url_for('tareas_completar', id=tarea.id) }}" style="display:inline">
+            <button type="submit" class="btn {% if tarea.estado == 'completada' %}btn-warning{% else %}btn-success{% endif %}">
+                {% if tarea.estado == 'completada' %}↩ Reabrir tarea{% else %}✔ Marcar completada{% endif %}
+            </button>
+        </form>
+        <form method="POST" action="{{ url_for('tareas_eliminar', id=tarea.id) }}" style="display:inline"
+              onsubmit="return confirm('¿Eliminar esta tarea?')">
+            <button type="submit" class="btn btn-danger">🗑 Eliminar</button>
+        </form>
+    </div>
+</div>
+
+<!-- SECCIÓN DE COMENTARIOS -->
+<div class="section">
+    <h3>Comentarios ({{ comentarios|length }})</h3>
+
+    {% if comentarios %}
+    <div class="comments-list">
+        {% for c in comentarios %}
+        <div class="comment-item">
+            <div class="comment-header">
+                <strong>{{ c.autor }}</strong>
+                <span class="comment-date">{{ c.fecha_creacion[:16] }}</span>
+            </div>
+            <p class="comment-body">{{ c.contenido }}</p>
+            {% if c.usuario_id == session.user_id %}
+            <form method="POST" action="{{ url_for('comentarios_eliminar', id=c.id) }}"
+                  onsubmit="return confirm('¿Eliminar comentario?')">
+                <button type="submit" class="btn btn-xs btn-danger">Eliminar</button>
+            </form>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-muted">No hay comentarios todavía.</p>
+    {% endif %}
+
+    <!-- FORMULARIO NUEVO COMENTARIO -->
+    <div class="comment-form">
+        <h4>Añadir comentario</h4>
+        <form method="POST" action="{{ url_for('comentarios_nuevo', tarea_id=tarea.id) }}">
+            <div class="form-group">
+                <textarea name="contenido" rows="3" required
+                          placeholder="Escribe tu comentario..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Publicar comentario</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

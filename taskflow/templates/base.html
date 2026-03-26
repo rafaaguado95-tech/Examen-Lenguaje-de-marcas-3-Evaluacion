@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TaskFlow{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+{% if session.user_id %}
+<!-- BARRA DE NAVEGACIÓN -->
+<nav class="navbar">
+    <div class="nav-brand">
+        <span class="brand-icon">⚡</span>
+        <strong>TaskFlow</strong>
+    </div>
+    <ul class="nav-links">
+        <li><a href="{{ url_for('dashboard') }}" {% if request.endpoint == 'dashboard' %}class="active"{% endif %}>Dashboard</a></li>
+        <li><a href="{{ url_for('tareas_lista') }}" {% if 'tareas' in request.endpoint %}class="active"{% endif %}>Tareas</a></li>
+        <li><a href="{{ url_for('proyectos_lista') }}" {% if 'proyectos' in request.endpoint %}class="active"{% endif %}>Proyectos</a></li>
+        <li><a href="{{ url_for('usuarios_lista') }}" {% if 'usuarios' in request.endpoint %}class="active"{% endif %}>Usuarios</a></li>
+    </ul>
+    <div class="nav-user">
+        <span>👤 {{ session.user_nombre }}</span>
+        <a href="{{ url_for('logout') }}" class="btn-logout">Salir</a>
+    </div>
+</nav>
+{% endif %}
+
+<!-- MENSAJES FLASH -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-container">
+        {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endwith %}
+
+<!-- CONTENIDO PRINCIPAL -->
+<main class="main-content">
+    {% block content %}{% endblock %}
+</main>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
