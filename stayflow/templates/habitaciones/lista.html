@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Habitaciones - StayFlow{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2>Habitaciones</h2>
+    <a href="{{ url_for('habitaciones_nueva') }}" class="btn btn-primary">+ Nueva habitación</a>
+</div>
+
+<div class="filters">
+    <a href="{{ url_for('habitaciones_lista') }}" class="btn btn-sm {% if not filtro %}btn-primary{% else %}btn-outline{% endif %}">Todas</a>
+    <a href="{{ url_for('habitaciones_lista', estado='disponible') }}" class="btn btn-sm {% if filtro=='disponible' %}btn-primary{% else %}btn-outline{% endif %}">Disponibles</a>
+    <a href="{{ url_for('habitaciones_lista', estado='ocupada') }}" class="btn btn-sm {% if filtro=='ocupada' %}btn-primary{% else %}btn-outline{% endif %}">Ocupadas</a>
+    <a href="{{ url_for('habitaciones_lista', estado='mantenimiento') }}" class="btn btn-sm {% if filtro=='mantenimiento' %}btn-primary{% else %}btn-outline{% endif %}">Mantenimiento</a>
+</div>
+
+{% if habitaciones %}
+<table class="table">
+    <thead>
+        <tr><th>Nº</th><th>Tipo</th><th>Capacidad</th><th>Precio/noche</th><th>Estado</th><th>Descripción</th><th>Acciones</th></tr>
+    </thead>
+    <tbody>
+        {% for h in habitaciones %}
+        <tr>
+            <td><strong>{{ h.numero }}</strong></td>
+            <td>{{ h.tipo|capitalize }}</td>
+            <td>{{ h.capacidad }} pers.</td>
+            <td>{{ '%.2f'|format(h.precio_noche) }}€</td>
+            <td><span class="badge badge-{{ h.estado }}">{{ h.estado }}</span></td>
+            <td class="text-muted">{{ h.descripcion or '—' }}</td>
+            <td>
+                <a href="{{ url_for('habitaciones_editar', id=h.id) }}" class="btn btn-xs btn-outline">✏️</a>
+                <form method="POST" action="{{ url_for('habitaciones_eliminar', id=h.id) }}" style="display:inline"
+                      onsubmit="return confirm('¿Eliminar habitación?')">
+                    <button class="btn btn-xs btn-danger">🗑</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="empty-state">
+    <p>No hay habitaciones registradas.</p>
+    <a href="{{ url_for('habitaciones_nueva') }}" class="btn btn-primary">Crear habitación</a>
+</div>
+{% endif %}
+{% endblock %}

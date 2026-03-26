@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Reservas - StayFlow{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2>Reservas</h2>
+    <a href="{{ url_for('reservas_nueva') }}" class="btn btn-primary">+ Nueva reserva</a>
+</div>
+
+<div class="filters">
+    <a href="{{ url_for('reservas_lista') }}" class="btn btn-sm {% if not filtro %}btn-primary{% else %}btn-outline{% endif %}">Todas</a>
+    <a href="{{ url_for('reservas_lista', estado='confirmada') }}" class="btn btn-sm {% if filtro=='confirmada' %}btn-primary{% else %}btn-outline{% endif %}">Confirmadas</a>
+    <a href="{{ url_for('reservas_lista', estado='activa') }}" class="btn btn-sm {% if filtro=='activa' %}btn-primary{% else %}btn-outline{% endif %}">Activas</a>
+    <a href="{{ url_for('reservas_lista', estado='completada') }}" class="btn btn-sm {% if filtro=='completada' %}btn-primary{% else %}btn-outline{% endif %}">Completadas</a>
+    <a href="{{ url_for('reservas_lista', estado='cancelada') }}" class="btn btn-sm {% if filtro=='cancelada' %}btn-primary{% else %}btn-outline{% endif %}">Canceladas</a>
+</div>
+
+{% if reservas %}
+<table class="table">
+    <thead>
+        <tr><th>#</th><th>Huésped</th><th>Hab.</th><th>Entrada</th><th>Salida</th><th>Total</th><th>Estado</th><th>Acciones</th></tr>
+    </thead>
+    <tbody>
+        {% for r in reservas %}
+        <tr>
+            <td>{{ r.id }}</td>
+            <td>{{ r.huesped_nombre }}</td>
+            <td>{{ r.hab_numero }} <small class="text-muted">({{ r.hab_tipo }})</small></td>
+            <td>{{ r.fecha_entrada }}</td>
+            <td>{{ r.fecha_salida }}</td>
+            <td><strong>{{ '%.2f'|format(r.total) }}€</strong></td>
+            <td><span class="badge badge-{{ r.estado }}">{{ r.estado }}</span></td>
+            <td>
+                <a href="{{ url_for('reservas_detalle', id=r.id) }}" class="btn btn-xs btn-outline">Ver</a>
+                <a href="{{ url_for('reservas_editar', id=r.id) }}" class="btn btn-xs btn-outline">✏️</a>
+                <form method="POST" action="{{ url_for('reservas_eliminar', id=r.id) }}" style="display:inline"
+                      onsubmit="return confirm('¿Eliminar reserva?')">
+                    <button class="btn btn-xs btn-danger">🗑</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="empty-state">
+    <p>No hay reservas.</p>
+    <a href="{{ url_for('reservas_nueva') }}" class="btn btn-primary">Crear reserva</a>
+</div>
+{% endif %}
+{% endblock %}

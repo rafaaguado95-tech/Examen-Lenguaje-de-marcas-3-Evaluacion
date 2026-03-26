@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}StayFlow{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+{% if session.user_id %}
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span class="brand-icon">🏨</span>
+            <span class="brand-name">StayFlow</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('dashboard') }}"        class="nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}">
+                <span class="nav-icon">📊</span> Dashboard
+            </a>
+            <a href="{{ url_for('reservas_lista') }}"   class="nav-item {% if 'reservas' in request.endpoint %}active{% endif %}">
+                <span class="nav-icon">📅</span> Reservas
+            </a>
+            <a href="{{ url_for('habitaciones_lista') }}" class="nav-item {% if 'habitaciones' in request.endpoint %}active{% endif %}">
+                <span class="nav-icon">🛏</span> Habitaciones
+            </a>
+            <a href="{{ url_for('huespedes_lista') }}"  class="nav-item {% if 'huespedes' in request.endpoint %}active{% endif %}">
+                <span class="nav-icon">👤</span> Huéspedes
+            </a>
+            <a href="{{ url_for('usuarios_lista') }}"   class="nav-item {% if 'usuarios' in request.endpoint %}active{% endif %}">
+                <span class="nav-icon">⚙️</span> Usuarios
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <span>{{ session.user_nombre }}</span>
+            <a href="{{ url_for('logout') }}" class="btn-logout">Salir</a>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main-wrapper">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-container">
+                {% for cat, msg in messages %}
+                <div class="flash flash-{{ cat }}">{{ msg }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endwith %}
+
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+</div>
+{% else %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-container" style="position:fixed;top:1rem;right:1rem;z-index:999;width:300px">
+            {% for cat, msg in messages %}
+            <div class="flash flash-{{ cat }}">{{ msg }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+{% endif %}
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

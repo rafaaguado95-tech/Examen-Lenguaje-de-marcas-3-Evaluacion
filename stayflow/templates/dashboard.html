@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard - StayFlow{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Dashboard</h2>
+    <span class="text-muted">Resumen del hotel</span>
+</div>
+
+<!-- ESTADÍSTICAS -->
+<div class="stats-grid">
+    <div class="stat-card" style="border-color:#2563eb">
+        <span class="stat-icon">📅</span>
+        <div>
+            <span class="stat-num">{{ reservas_activas }}</span>
+            <span class="stat-label">Reservas activas</span>
+        </div>
+    </div>
+    <div class="stat-card" style="border-color:#16a34a">
+        <span class="stat-icon">🛏</span>
+        <div>
+            <span class="stat-num">{{ disponibles }}</span>
+            <span class="stat-label">Hab. disponibles</span>
+        </div>
+    </div>
+    <div class="stat-card" style="border-color:#dc2626">
+        <span class="stat-icon">🔒</span>
+        <div>
+            <span class="stat-num">{{ ocupadas }}</span>
+            <span class="stat-label">Hab. ocupadas</span>
+        </div>
+    </div>
+    <div class="stat-card" style="border-color:#d97706">
+        <span class="stat-icon">👤</span>
+        <div>
+            <span class="stat-num">{{ total_huespedes }}</span>
+            <span class="stat-label">Huéspedes</span>
+        </div>
+    </div>
+    <div class="stat-card" style="border-color:#7c3aed">
+        <span class="stat-icon">💶</span>
+        <div>
+            <span class="stat-num">{{ '%.0f'|format(ingresos) }}€</span>
+            <span class="stat-label">Ingresos totales</span>
+        </div>
+    </div>
+</div>
+
+<!-- ACCIONES RÁPIDAS -->
+<div class="quick-actions">
+    <a href="{{ url_for('reservas_nueva') }}"    class="btn btn-primary">+ Nueva reserva</a>
+    <a href="{{ url_for('huespedes_nuevo') }}"   class="btn btn-secondary">+ Nuevo huésped</a>
+    <a href="{{ url_for('habitaciones_nueva') }}" class="btn btn-outline">+ Nueva habitación</a>
+</div>
+
+<!-- PRÓXIMAS ENTRADAS -->
+<div class="section">
+    <h3>Próximas entradas</h3>
+    {% if proximas %}
+    <table class="table">
+        <thead>
+            <tr><th>Fecha entrada</th><th>Huésped</th><th>Habitación</th><th>Estado</th><th></th></tr>
+        </thead>
+        <tbody>
+            {% for r in proximas %}
+            <tr>
+                <td>{{ r.fecha_entrada }}</td>
+                <td>{{ r.huesped }}</td>
+                <td>Hab. {{ r.habitacion }}</td>
+                <td><span class="badge badge-{{ r.estado }}">{{ r.estado }}</span></td>
+                <td><a href="{{ url_for('reservas_detalle', id=r.id) }}" class="btn btn-xs btn-outline">Ver</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="text-muted">No hay próximas entradas.</p>
+    {% endif %}
+</div>
+{% endblock %}

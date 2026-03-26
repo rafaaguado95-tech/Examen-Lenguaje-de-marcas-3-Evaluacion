@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Huéspedes - StayFlow{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2>Huéspedes</h2>
+    <a href="{{ url_for('huespedes_nuevo') }}" class="btn btn-primary">+ Nuevo huésped</a>
+</div>
+
+<form method="GET" class="search-bar">
+    <input type="text" name="q" value="{{ q }}" placeholder="Buscar por nombre, apellidos o DNI...">
+    <button type="submit" class="btn btn-outline">Buscar</button>
+    {% if q %}<a href="{{ url_for('huespedes_lista') }}" class="btn btn-outline">✕ Limpiar</a>{% endif %}
+</form>
+
+{% if huespedes %}
+<table class="table">
+    <thead>
+        <tr><th>#</th><th>Nombre</th><th>DNI</th><th>Email</th><th>Teléfono</th><th>Nacionalidad</th><th>Acciones</th></tr>
+    </thead>
+    <tbody>
+        {% for h in huespedes %}
+        <tr>
+            <td>{{ h.id }}</td>
+            <td><strong>{{ h.apellidos }}, {{ h.nombre }}</strong></td>
+            <td>{{ h.dni or '—' }}</td>
+            <td>{{ h.email or '—' }}</td>
+            <td>{{ h.telefono or '—' }}</td>
+            <td>{{ h.nacionalidad or '—' }}</td>
+            <td>
+                <a href="{{ url_for('huespedes_editar', id=h.id) }}" class="btn btn-xs btn-outline">✏️ Editar</a>
+                <form method="POST" action="{{ url_for('huespedes_eliminar', id=h.id) }}" style="display:inline"
+                      onsubmit="return confirm('¿Eliminar huésped?')">
+                    <button class="btn btn-xs btn-danger">🗑</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="empty-state">
+    <p>No hay huéspedes registrados.</p>
+    <a href="{{ url_for('huespedes_nuevo') }}" class="btn btn-primary">Registrar huésped</a>
+</div>
+{% endif %}
+{% endblock %}

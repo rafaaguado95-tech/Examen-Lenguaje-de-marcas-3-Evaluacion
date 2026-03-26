@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}{% if huesped %}Editar{% else %}Nuevo{% endif %} Huésped - StayFlow{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2>{% if huesped %}Editar huésped{% else %}Nuevo huésped{% endif %}</h2>
+    <a href="{{ url_for('huespedes_lista') }}" class="btn btn-outline">← Volver</a>
+</div>
+<div class="form-card">
+    <form method="POST">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Nombre *</label>
+                <input type="text" name="nombre" required value="{{ huesped.nombre if huesped else '' }}">
+            </div>
+            <div class="form-group">
+                <label>Apellidos *</label>
+                <input type="text" name="apellidos" required value="{{ huesped.apellidos if huesped else '' }}">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>DNI / Pasaporte</label>
+                <input type="text" name="dni" value="{{ huesped.dni if huesped else '' }}">
+            </div>
+            <div class="form-group">
+                <label>Nacionalidad</label>
+                <input type="text" name="nacionalidad" value="{{ huesped.nacionalidad if huesped else '' }}">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" value="{{ huesped.email if huesped else '' }}">
+            </div>
+            <div class="form-group">
+                <label>Teléfono</label>
+                <input type="text" name="telefono" value="{{ huesped.telefono if huesped else '' }}">
+            </div>
+        </div>
+        <div class="form-actions">
+            <a href="{{ url_for('huespedes_lista') }}" class="btn btn-outline">Cancelar</a>
+            <button type="submit" class="btn btn-primary">{% if huesped %}Guardar cambios{% else %}Registrar huésped{% endif %}</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

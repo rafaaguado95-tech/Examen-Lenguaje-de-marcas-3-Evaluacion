@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}{% if reserva %}Editar{% else %}Nueva{% endif %} Reserva - StayFlow{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2>{% if reserva %}Editar reserva{% else %}Nueva reserva{% endif %}</h2>
+    <a href="{{ url_for('reservas_lista') }}" class="btn btn-outline">← Volver</a>
+</div>
+<div class="form-card">
+    <form method="POST">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Huésped *</label>
+                <select name="huesped_id" required>
+                    <option value="">— Selecciona huésped —</option>
+                    {% for h in huespedes %}
+                    <option value="{{ h.id }}" {% if reserva and reserva.huesped_id == h.id %}selected{% endif %}>
+                        {{ h.apellidos }}, {{ h.nombre }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Habitación *</label>
+                <select name="habitacion_id" required>
+                    <option value="">— Selecciona habitación —</option>
+                    {% for h in habitaciones %}
+                    <option value="{{ h.id }}" {% if reserva and reserva.habitacion_id == h.id %}selected{% endif %}>
+                        Hab. {{ h.numero }} - {{ h.tipo|capitalize }} ({{ '%.2f'|format(h.precio_noche) }}€/noche)
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Fecha de entrada *</label>
+                <input type="date" name="fecha_entrada" required value="{{ reserva.fecha_entrada if reserva else '' }}">
+            </div>
+            <div class="form-group">
+                <label>Fecha de salida *</label>
+                <input type="date" name="fecha_salida" required value="{{ reserva.fecha_salida if reserva else '' }}">
+            </div>
+        </div>
+        {% if reserva %}
+        <div class="form-group">
+            <label>Estado</label>
+            <select name="estado">
+                <option value="confirmada" {% if reserva.estado=='confirmada' %}selected{% endif %}>Confirmada</option>
+                <option value="activa"     {% if reserva.estado=='activa' %}selected{% endif %}>Activa</option>
+                <option value="completada" {% if reserva.estado=='completada' %}selected{% endif %}>Completada</option>
+                <option value="cancelada"  {% if reserva.estado=='cancelada' %}selected{% endif %}>Cancelada</option>
+            </select>
+        </div>
+        {% endif %}
+        <div class="form-group">
+            <label>Notas</label>
+            <textarea name="notas" rows="3" placeholder="Peticiones especiales, alergias...">{{ reserva.notas if reserva else '' }}</textarea>
+        </div>
+        <p class="text-muted" style="font-size:0.85rem">💡 El total se calcula automáticamente según el número de noches y precio de la habitación.</p>
+        <div class="form-actions">
+            <a href="{{ url_for('reservas_lista') }}" class="btn btn-outline">Cancelar</a>
+            <button type="submit" class="btn btn-primary">{% if reserva %}Guardar cambios{% else %}Crear reserva{% endif %}</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}{% if habitacion %}Editar{% else %}Nueva{% endif %} Habitación - StayFlow{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2>{% if habitacion %}Editar habitación{% else %}Nueva habitación{% endif %}</h2>
+    <a href="{{ url_for('habitaciones_lista') }}" class="btn btn-outline">← Volver</a>
+</div>
+<div class="form-card">
+    <form method="POST">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Número *</label>
+                <input type="text" name="numero" required placeholder="101" value="{{ habitacion.numero if habitacion else '' }}">
+            </div>
+            <div class="form-group">
+                <label>Tipo *</label>
+                <select name="tipo" required>
+                    <option value="individual" {% if habitacion and habitacion.tipo=='individual' %}selected{% endif %}>Individual</option>
+                    <option value="doble"      {% if habitacion and habitacion.tipo=='doble' %}selected{% endif %}>Doble</option>
+                    <option value="suite"      {% if habitacion and habitacion.tipo=='suite' %}selected{% endif %}>Suite</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Precio por noche (€) *</label>
+                <input type="number" name="precio_noche" required step="0.01" min="0"
+                       value="{{ habitacion.precio_noche if habitacion else '' }}">
+            </div>
+            <div class="form-group">
+                <label>Capacidad (personas)</label>
+                <input type="number" name="capacidad" min="1" max="10"
+                       value="{{ habitacion.capacidad if habitacion else 2 }}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Estado</label>
+            <select name="estado">
+                <option value="disponible"   {% if habitacion and habitacion.estado=='disponible' %}selected{% endif %}>Disponible</option>
+                <option value="ocupada"      {% if habitacion and habitacion.estado=='ocupada' %}selected{% endif %}>Ocupada</option>
+                <option value="mantenimiento"{% if habitacion and habitacion.estado=='mantenimiento' %}selected{% endif %}>Mantenimiento</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Descripción</label>
+            <textarea name="descripcion" rows="3">{{ habitacion.descripcion if habitacion else '' }}</textarea>
+        </div>
+        <div class="form-actions">
+            <a href="{{ url_for('habitaciones_lista') }}" class="btn btn-outline">Cancelar</a>
+            <button type="submit" class="btn btn-primary">{% if habitacion %}Guardar cambios{% else %}Crear habitación{% endif %}</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
